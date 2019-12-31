@@ -1,7 +1,7 @@
 # Failure Predicting
 Try to predict which units are most likely to fail soon.
 
-# Idea 1: compute the days until failure for each data sample, and train regression MLP to predict the days until failure for test set.
+## Idea 1: compute the days until failure for each data sample, and train regression MLP to predict the days until failure for test set.
 
 1. Preparing 1 label and 2 new features before training model:
 
@@ -40,7 +40,7 @@ From the model predictions, the units with largest failure probability in the ne
 	- unit 40: 0.349
 
 
-# Method 2: train regression MLP for the two groups(clustered by Kmeans) respectively
+## Method 2: train regression MLP for the two groups(clustered by Kmeans) respectively
 
 1. Train-test split the merged data of units in cluster 1, normalizing all inputs and label values.
 
