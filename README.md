@@ -10,17 +10,22 @@ Take a look at feature values and their distributions
 - motor_voltage of various units
 ![motor_voltages](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/feature_visualization/motor_voltages.png)
 
-- inlet temp of various units
-![inlet_temps](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/feature_visualization/inlet_temps.png)
+- motor_temp of various units
+![motor_temps](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/feature_visualization/motor_temps.png)
 
 - rpm distribution of all units
 ![rpm_distrs](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/feature_visualization/rpm_distrs.png)
  
 - motor_current distribution of all units
-![motor_currents](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/feature_visualization/motor_current_distr.png)
+![motor_current_distrs](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/feature_visualization/motor_current_distr.png)
+ 
+- inlet_temp distribution of all units
+![inlet_temp_distrs](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/feature_visualization/inlet_temp_distrs.png)
  
 -  Pearson correlation between features of various units
 ![pearson_corrs](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/feature_visualization/Pearson_correlations.png)
+
+An obvious pattern observed here is that in every feature, there're 2 groups of distribution pattern existing in all units. This takes us to an initiative of clustering attempts.
 
 [Click me for more details of feature visualization work](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/notebooks/feature%20visualization.ipynb)
 
@@ -45,6 +50,39 @@ Apply the first method and exclude the anomalies in all units. Most of the outli
 ![comp_22](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/anomaly_detection/comparison_22.png)
 
 [Click me for more details of anomaly detection work](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/references/anomaly_detection.md)
+
+## Time Series Analysis
+
+Try to predict the feature trends of a unit going with time.
+
+Look at the rolling mean & std of feature motor_voltage in all units
+![motor_voltage_rollings](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_voltage_rollings.png)
+
+Try to predict the trend of motor_voltage for unit 0019.
+
+- use AD-Fuller test for confirming stationarity
+	ADF Statistic: -8.357128
+	p-value: 0.000000
+	
+The p-value is smaller than threshold 0.05, so the trend is stationary.
+
+- peek at the lately trend of its motor_voltage.
+![motor_voltage_19_lately](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_voltage_19_lately.png)
+
+- plot the autocorrelation & partial autocorrelation of motor_voltage for unit 0019
+![motor_voltage_19_pacf](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_voltage_19_pacf.png)
+
+- train seasonal ARIMA model and predict the future values with confidence interval.
+Train SARIMA model for unit 0019 motor_voltage. Differencing is set to 0 due to data stationarity, while p and q are both set since there're cut-offs in autocorrelation and partial autocorrelation. Grid search is used to find the best param combinations. And finally use the trained SARIMA to predict the future 15% data.
+![motor_voltage_19_SARIMAX](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_voltage_19_SARIMAX.png)
+
+Another attempt: to predict the trend of feature "motor_temp" on unit 0018.
+
+- the original data trend looks like:
+![motor_temp_18](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_temp_18.png)
+
+- train SARIMAX model on the lately trend based on acf, pacf and grid search, and predict the future values with confidence interval.
+![motor_temp_18_SARIMAX](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_temp_18_SARIMAX.png)
 
 
 ## Clustering
