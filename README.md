@@ -22,10 +22,12 @@ Take a look at feature values and their distributions
 - inlet_temp distribution of all units
 ![inlet_temp_distrs](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/feature_visualization/inlet_temp_distrs.png)
  
+An obvious pattern observed here is that in every feature, there're 2 groups of distribution pattern existing in all units. This takes us to an initiative of clustering attempts.
+
 -  Pearson correlation between features of various units
 ![pearson_corrs](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/feature_visualization/Pearson_correlations.png)
 
-An obvious pattern observed here is that in every feature, there're 2 groups of distribution pattern existing in all units. This takes us to an initiative of clustering attempts.
+It can be observed that the feature "rpm" is quite separate from all other features, while "motor_voltage", "motor_current", "motor_temp" and "inlet_temp" are somewhat correlated in most units.
 
 [Click me for more details of feature visualization work](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/notebooks/feature%20visualization.ipynb)
 
@@ -45,9 +47,9 @@ And after anomalies are excluded:
 After excluding anomalies using isolation forest, the rpm of unit 0001 looks like:
 ![rpm_if](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/anomaly_detection/rpm_1_wo_anml_IF.png)
 
-Apply the first method and exclude the anomalies in all units. Most of the outliers are removed and the patterns look more concentrated. Below is an example on unit 0022.
+Method 1 seems to remove more reasonable outliers and normalize the distribution better. So apply the first method here to exclude anomalies in all units. Most of the outliers are removed and the patterns look more concentrated. Below is an example of before and after excluding anomalies on unit 0001.
 
-![comp_22](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/anomaly_detection/comparison_22.png)
+![comp_1](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/anomaly_detection/comparison_1.png)
 
 [Click me for more details of anomaly detection work](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/references/anomaly_detection.md)
 
@@ -55,16 +57,16 @@ Apply the first method and exclude the anomalies in all units. Most of the outli
 
 Try to predict the feature trends of a unit going with time.
 
-Look at the rolling mean & std of feature motor_voltage in all units
+- Look at the rolling mean & std of feature motor_voltage in all units
 ![motor_voltage_rollings](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_voltage_rollings.png)
 
-Try to predict the trend of motor_voltage for unit 0019.
+###### Try to predict the trend of motor_voltage for unit 0019.
 
 - use AD-Fuller test for confirming stationarity
-	ADF Statistic: -8.357128
-	p-value: 0.000000
+	- ADF Statistic: -8.357128
+	- p-value: 0.000000
 	
-The p-value is smaller than threshold 0.05, so the trend is stationary.
+The p-value is smaller than threshold 0.05, which indicates data stationarity.
 
 - peek at the lately trend of its motor_voltage.
 ![motor_voltage_19_lately](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_voltage_19_lately.png)
@@ -73,16 +75,19 @@ The p-value is smaller than threshold 0.05, so the trend is stationary.
 ![motor_voltage_19_pacf](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_voltage_19_pacf.png)
 
 - train seasonal ARIMA model and predict the future values with confidence interval.
+
 Train SARIMA model for unit 0019 motor_voltage. Differencing is set to 0 due to data stationarity, while p and q are both set since there're cut-offs in autocorrelation and partial autocorrelation. Grid search is used to find the best param combinations. And finally use the trained SARIMA to predict the future 15% data.
 ![motor_voltage_19_SARIMAX](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_voltage_19_SARIMAX.png)
 
-Another attempt: to predict the trend of feature "motor_temp" on unit 0018.
+###### Another attempt: to predict the trend of feature "motor_temp" on unit 0018.
 
 - the original data trend looks like:
 ![motor_temp_18](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_temp_18.png)
 
 - train SARIMAX model on the lately trend based on acf, pacf and grid search, and predict the future values with confidence interval.
 ![motor_temp_18_SARIMAX](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_temp_18_SARIMAX.png)
+
+[Click me for more details of time series analysis work](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/notebooks/time%20series%20analysis.ipynb)
 
 
 ## Clustering
@@ -118,6 +123,79 @@ Just like training dataset, it's lucky that the test set also splits into these 
 [Click me for more details of clustering work](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/references/clustering.md)
 	
 ## Failure Predicting
+
+Try to predict the units that are most likely to fail in near future.
+
+###### idea 1: compute the days until failure for each data sample, and train regression MLP to predict the days until failure for test set.
+
+1. Preparing 1 label and 2 new features before training model:
+
+	- time remaining until failure (in days)
+
+	- accumulated warnings generated till now
+
+	- accumulated errors generated till now
+
+After combining features with alarming data, let's try to plot some feature trends:
+![motor_voltage_18](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/failure_predicting/motor_voltage_18.png)
+
+2. Normalizing all feature values and y labels. Below is the distribution of y label for training set.
+![y_train_distr](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/failure_predicting/y_train_distr.png)
+
+3. Constructing MLP model using Tensorflow Keras API.
+
+After tons of paramter tuning, it turned out that Dense layers of Lecun normal init and Adadelta optimizer, followed by leaky-ReLU activation outperformed all the other decent options. Model training early stopped at .58 r square, where overfitting began to populate.
+![history_all](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/failure_predicting/training_history_all.png)
+
+4. Use the trained model to predict the days until failure for new units. Compute the possibility of failure within next 30 days and average failure time predicted by the model on every row.
+
+From the model predictions, the units with largest failure probability in the next 30 days are:
+
+	- unit 39: 0.178
+
+	- unit 47: 0.188
+
+	- unit 21: 0.276
+
+	- unit 28: 0.294
+
+	- unit 27: 0.337
+
+	- unit 40: 0.349
+
+
+## Method 2: train regression MLP for the two groups(clustered by Kmeans) respectively
+
+1. Train-test split the merged data of units in cluster 1, normalizing all inputs and label values.
+
+2. Construct Keras neural network for the dataset on cluster 1, using 5 dense layers, leaky ReLU activation, Adadelta optimization and Lecun init(tuned out to be the optimal). R square is used for evaluation metric.
+![history_c1](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/failure_predicting/training_history_c1.png)
+
+The training process achieved .66 r square on testing set before early stopping detected overfitting.
+
+3. Aggregate data and train-test split the merged data of units in cluster 2, normalizing all inputs and label values.
+
+4. Construct Keras neural network for the dataset on cluster 2. Less layers and nerons are needed since training data becomes less. Leaky-ReLU and Adadelta optimizer still outperformed all the other options.
+![history_c2](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/failure_predicting/training_history_c2.png)
+
+5. From the 2 models for cluster 1 and 2, the units with largest failure probability in the next 30 days are:
+
+	- unit 42: 0.122
+
+	- unit 21: 0.129
+
+	- unit 28: 0.131
+
+	- unit 32: 0.176
+
+	- unit 40: 0.191
+
+	- unit 27: 0.201
+
+	- unit 23: 0.523
+	
+Besides, I also tried random forest regressor on the cluster 2 data. 400 estimators reached an R square of around .55 on 3-fold cross validation, which was a little bit better than MLP but not a dramatic improvement, so finally I used MLP for final predicting.
+
 
 
 
