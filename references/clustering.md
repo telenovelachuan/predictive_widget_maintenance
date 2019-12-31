@@ -1,4 +1,4 @@
-# Anomaly Detection
+# Clustering
 
 Try clustering the unit data samples on different granularities and visualizing the output.
 
@@ -44,20 +44,20 @@ For KMeans with 15 clusters, the cluster sizes polarized.
 
 It can be obviously observed that there are 2 cluster for the stats description.
 
-cluster 1: 0000, 0001, 0003, 0004, 0005, 0006, 0007, 0010, 0011, 0012, 0016, 0017, 0018, 0019
+	cluster 1: 0000, 0001, 0003, 0004, 0005, 0006, 0007, 0010, 0011, 0012, 0016, 0017, 0018, 0019
 
-cluster 2: 0002, 0008, 0009, 0014, 0015
+	cluster 2: 0002, 0008, 0009, 0014, 0015
 
-cluster 3: 0013
+	cluster 3: 0013
 
 3. Run Kmeans on all the test data and train data.
 ![kmeans_all](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/clustering/kmeans_all.png)
 
 Just like training dataset, it's lucky that the test set also splits into these 2 clusters.
 
-cluster 1: 0020, 0021, 0022, 0024, 0025, 0026, 0027, 0028, 0029, 0030, 0031, 0032, 0033, 0034, 0035, 0036, 0037, 0038, 0039, 0040, 0041, 0042, 0043, 0044, 0045, 0046, 0047, 0048, 0049
+	cluster 1: 0020, 0021, 0022, 0024, 0025, 0026, 0027, 0028, 0029, 0030, 0031, 0032, 0033, 0034, 0035, 0036, 0037, 0038, 0039, 0040, 0041, 0042, 0043, 0044, 0045, 0046, 0047, 0048, 0049
 
-cluster 2: 0023
+	cluster 2: 0023
 
 
 
