@@ -197,6 +197,13 @@ The training process achieved .66 r square on testing set before early stopping 
 	
 Besides, I also tried random forest regressor on the cluster 2 data. 400 estimators reached an R square of around .55 on 3-fold cross validation, which was a little bit better than MLP but not a dramatic improvement, so finally I used MLP for final predicting.
 
+More details of work on predicting failures:
+
+[Idea 1](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/notebooks/unit%20failure%20predicting.ipynb)
+
+[Idea 2](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/notebooks/unit%20failure%20predicting%20based%20on%20clustering.ipynb)
+
+
 
 
 
