@@ -126,7 +126,7 @@ Just like training dataset, it's lucky that the test set also splits into these 
 
 Try to predict the units that are most likely to fail in near future.
 
-###### idea 1: compute the days until failure for each data sample, and train regression MLP to predict the days until failure for test set.
+###### Idea 1: compute the days until failure for each data sample, and train regression MLP to predict the days until failure for test set. So every prediction on test sample tells the time it predicts to fail. Aggregating all predictions would just "vote" for the probability of the unit failure within a given time period.
 
 1. Preparing 1 label and 2 new features before training model:
 
@@ -136,7 +136,7 @@ Try to predict the units that are most likely to fail in near future.
 
 	- accumulated errors generated till now
 
-After combining features with alarming data, let's try to plot some feature trends:
+After combining features with alarming data, let's try to plot some feature trends (Yellow lines are warnings and red lines are errors):
 ![motor_voltage_18](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/failure_predicting/motor_voltage_18.png)
 
 2. Normalizing all feature values and y labels. Below is the distribution of y label for training set.
@@ -144,7 +144,8 @@ After combining features with alarming data, let's try to plot some feature tren
 
 3. Constructing MLP model using Tensorflow Keras API.
 
-After tons of paramter tuning, it turned out that Dense layers of Lecun normal init and Adadelta optimizer, followed by leaky-ReLU activation outperformed all the other decent options. Model training early stopped at .58 r square, where overfitting began to populate.
+After tons of paramter tuning, it turned out that Dense layers with Lecun normal init and Adadelta optimizer, followed by leaky-ReLU activation outperformed all the other decent options. Model training early stopped at .58 r square, where overfitting began to populate.
+
 ![history_all](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/failure_predicting/training_history_all.png)
 
 4. Use the trained model to predict the days until failure for new units. Compute the possibility of failure within next 30 days and average failure time predicted by the model on every row.
@@ -164,7 +165,7 @@ From the model predictions, the units with largest failure probability in the ne
 	- unit 40: 0.349
 
 
-## Method 2: train regression MLP for the two groups(clustered by Kmeans) respectively
+###### Idea 2: train regression MLP for the two groups(clustered by Kmeans) respectively, and predict according to clusters.
 
 1. Train-test split the merged data of units in cluster 1, normalizing all inputs and label values.
 
@@ -178,7 +179,7 @@ The training process achieved .66 r square on testing set before early stopping 
 4. Construct Keras neural network for the dataset on cluster 2. Less layers and nerons are needed since training data becomes less. Leaky-ReLU and Adadelta optimizer still outperformed all the other options.
 ![history_c2](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/failure_predicting/training_history_c2.png)
 
-5. From the 2 models for cluster 1 and 2, the units with largest failure probability in the next 30 days are:
+5. For the test units from 20 to 49, find their corresponding model based on cluster and predict the failure probabilities. The units with biggest failure probability in the next 30 days are:
 
 	- unit 42: 0.122
 
