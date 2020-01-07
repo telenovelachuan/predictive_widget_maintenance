@@ -68,6 +68,23 @@ Try to predict the feature trends of a unit going with time.
 - rolling mean &std for motor_current, window 150.
 ![motor_current_rollings](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_current_rollings_w150.png)
 
+###### Try to predict the trend of rpm for unit 0.
+
+- downsampling the rpm data of unit 0000 to twice a day
+![rpm_0](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/rpm_0.png)
+
+- The data trend shows a slight up-going trend. Try to get rid of non-stationarity. Set freq to 24(12 days), do AD-Fuller test based on differencing and plot acf/pacf.
+![rpm_0_acf_pacf](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/rpm_0_acf_pacf.png)
+
+- Try decomposition on the data. Trend and seasonals are clearly separated, with residuals oscillating around zero.
+![rpm_0_decomposition](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/rpm_0_decomposition.png)
+
+- Try SARIMA modeling. Set p to 3 according to pacf, and try q starting from 3 according to acf. Use d=1 for one time differencing since the data is not stationary.
+The training achieved -1398.904 AIC which indicates a good fit.
+
+- Use SARIMAX model to predict the next 15% future data with its confidence interval.
+![rpm_0_SARIMAX](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/rpm_0_SARIMAX.png)
+
 
 ###### Try to predict the trend of motor_voltage for unit 0019.
 
@@ -87,16 +104,6 @@ The p-value is smaller than threshold 0.05, which indicates data stationarity.
 
 Train SARIMA model for unit 0019 motor_voltage. Differencing is set to 0 due to data stationarity, while p and q are both set since there're cut-offs in autocorrelation and partial autocorrelation. Grid search is used to find the best param combinations. And finally use the trained SARIMA to predict the future 15% data.
 ![motor_voltage_19_SARIMAX](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_voltage_19_SARIMAX.png)
-
-###### Another attempt: to predict the trend of feature "motor_temp" on unit 0018.
-
-- the original data trend looks like:
-![motor_temp_18](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_temp_18.png)
-
-- train SARIMAX model on the lately trend based on acf, pacf and grid search, and predict the future values with confidence interval.
-![motor_temp_18_SARIMAX](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_temp_18_SARIMAX.png)
-
-[Click me for more details of time series analysis work](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/notebooks/time%20series%20analysis.ipynb)
 
 
 ## Clustering
