@@ -58,10 +58,14 @@ Method 1 seems to remove more reasonable outliers and normalize the distribution
 Try to predict the feature trends of a unit going with time.
 
 - Take a look at the rolling mean & std of all features. After several attempts, it appears that a window of 100 for rpm and motor_voltage, and a window of 150 for motor_current and motor_temp best aggregates and represents feature value trends.
+
+- rolling mean &std for rpm, window 100.
 ![rpm_rollings](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/rpm_rollings_w100.png)
 
+- rolling mean &std for motor_voltage, window 100.
 ![motor_voltage_rollings](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_voltage_rollings_w100.png)
 
+- rolling mean &std for motor_current, window 150.
 ![motor_current_rollings](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/motor_current_rollings_w150.png)
 
 
