@@ -81,6 +81,9 @@ Try to predict the feature trends of a unit going with time.
 
 - Try SARIMA modeling. Set p to 3 according to pacf, and try q starting from 3 according to acf. Use d=1 for one time differencing since the data is not stationary.
 The training achieved -1398.904 AIC which indicates a good fit.
+![rpm_0_SARIMAX_fit](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/rpm_0_SARIMAX_fit.png)
+
+The fit diagnose plot also verifies a random normal residual, and perfect sample quantiles.
 
 - Use SARIMAX model to predict the next 15% future data with its confidence interval.
 ![rpm_0_SARIMAX](https://github.com/telenovelachuan/predictive_widget_maintenance/blob/master/reports/figures/time_series/rpm_0_SARIMAX.png)
