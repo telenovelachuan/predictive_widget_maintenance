@@ -1,4 +1,4 @@
-A data science project on the widget maintenance dataset of ExampleCo, Inc to explore feature trends of its data generating system and predict the units that are mostly likely to fail.
+A data science project on the widget maintenance dataset to explore feature trends of its data generating system and predict the units failure probability and time sequence trends.
 
 ## Feature exploring
 
